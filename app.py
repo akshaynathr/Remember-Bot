@@ -7,13 +7,13 @@ from flask import Flask, request
 
 app = Flask(__name__)
 
-
+token="remember_bot"
 @app.route('/', methods=['GET'])
 def verify():
     # when the endpoint is registered as a webhook, it must echo back
     # the 'hub.challenge' value it receives in the query arguments
     if request.args.get("hub.mode") == "subscribe" and request.args.get("hub.challenge"):
-        if not request.args.get("hub.verify_token") == os.environ["VERIFY_TOKEN"]:
+        if not request.args.get("hub.verify_token") == token:
             return "Verification token mismatch", 403
         return request.args["hub.challenge"], 200
 
@@ -39,6 +39,7 @@ def webhook():
                     recipient_id = messaging_event["recipient"]["id"]  # the recipient's ID, which should be your page's facebook ID
                     message_text = messaging_event["message"]["text"]  # the message's text
 
+#                    send_message(sender_id, message_text)
                     send_message(sender_id, "got it, thanks!")
 
                 if messaging_event.get("delivery"):  # delivery confirmation
@@ -58,7 +59,7 @@ def send_message(recipient_id, message_text):
     log("sending message to {recipient}: {text}".format(recipient=recipient_id, text=message_text))
 
     params = {
-        "access_token": os.environ["PAGE_ACCESS_TOKEN"]
+        "access_token": "EAAPJyQPXUXMBADCpmjYyv3NDVJHEsVzTNLuzZBnAGj0BOsVZCu14fV9En4LCQPyPE08lMlWw3v1ggcKGWXb3hbHwZB2RHuoOtx82VB9bjItLBH9fZCEor7sLdGRA1Lb44xur8EHgDVYdX4bmutaSGFo2b4xOOoZAyoPVqdy2yKAZDZD"
     }
     headers = {
         "Content-Type": "application/json"
@@ -78,9 +79,7 @@ def send_message(recipient_id, message_text):
 
 
 def log(message):  # simple wrapper for logging to stdout on heroku
-    print str(message)
+    print( str(message))
     sys.stdout.flush()
 
 
-if __name__ == '__main__':
-    app.run(debug=True)

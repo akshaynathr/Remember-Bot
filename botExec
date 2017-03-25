@@ -1,0 +1,3 @@
+source ../venv/bin/activate
+exec gunicorn --workers 3 --bind unix:bot.sock -m 777 wsgi:app &
+
