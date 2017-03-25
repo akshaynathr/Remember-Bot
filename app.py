@@ -43,11 +43,11 @@ def webhook():
 
 #                    send_message(sender_id, message_text)
 
-                    msg_lst=message_text.split(" ")
-                    if msg_lst[0].lower()=="wiki":
-                        l=len(msg_lst[0])
-                        search=message_text[l:]
-                        result=search_wiki(search) 
+                    # msg_lst=message_text.split(" ")
+                    # if msg_lst[0].lower()=="wiki":
+                    #     l=len(msg_lst[0])
+                    #     search=message_text[l:]
+                    #     result=search_wiki(search) 
 
 
                     send_message(sender_id, "got it, thanks!")
@@ -122,7 +122,7 @@ def send_message(recipient_id, message_text):
     #         "text": message_text
     #     }
     # })
-    r = requests.post("https://graph.facebook.com/v2.6/me/messages", params=params, headers=headers, data=data)
+    r = requests.post("https://graph.facebook.com/v2.6/me/messages", params=params, headers=headers, data=data2)
     if r.status_code != 200:
         log(r.status_code)
         log(r.text)
