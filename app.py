@@ -87,12 +87,12 @@ def send_message(recipient_id, message_text):
         "elements":[
            {
             "title":"Welcome to Peter\'s Hats",
-            "image_url":"https://petersfancybrownhats.com/company_image.png",
+            "image_url":"http://www.villagehatshop.com/photos/product/standard/4511390S61417/mens-hats/mj-panama-straw-outback-hat.jpg",#"https://petersfancybrownhats.com/company_image.png",
             "subtitle":"We\'ve got the right hat for everyone.",
             "default_action": {
               "type": "web_url",
               "url": "https://peterssendreceiveapp.ngrok.io/view?item=103",
-              "messenger_extensions": true,
+              "messenger_extensions": True,
               "webview_height_ratio": "tall",
               "fallback_url": "https://peterssendreceiveapp.ngrok.io/"
             },
