@@ -1,0 +1,6 @@
+curl -X POST -H "Content-Type: application/json" -d '{
+  "setting_type" : "domain_whitelisting",
+  "whitelisted_domains" : ["https://techcrunch.com"],
+  "domain_action_type": "add"
+}' "https://graph.facebook.com/v2.6/me/thread_settings?access_token=EAAPJyQPXUXMBADCpmjYyv3NDVJHEsVzTNLuzZBnAGj0BOsVZCu14fV9En4LCQPyPE08lMlWw3v1ggcKGWXb3hbHwZB2RHuoOtx82VB9bjItLBH9fZCEor7sLdGRA1Lb44xur8EHgDVYdX4bmutaSGFo2b4xOOoZAyoPVqdy2yKAZDZD"
+
