@@ -6,6 +6,19 @@ import json
 import requests
 from flask import Flask, request
 from wiki import *
+from models import dbSetUp,r
+from jokes import jokes
+from facts import facts
+from quotes import quotes
+from random import randint
+
+
+dbSetUp()
+
+
+
+
+
 
 app = Flask(__name__)
 
@@ -41,8 +54,74 @@ def webhook():
                     recipient_id = messaging_event["recipient"]["id"]  # the recipient's ID, which should be your page's facebook ID
                     message_text = messaging_event["message"]["text"]  # the message's text
 
-                     
+                    
                     msg_lst=message_text.split(" ")
+
+
+
+                    '''SAVE FUNCTIONS '''
+
+
+                    if msg_lst[0].lower()=="save":
+                        l=len(msg_lst[0])
+                        if len(message_text)==l or len(msg_lst)==2:
+                            send_message(sender_id,"Please specify something to save. Type 'Save ExamId 12345' ")
+                        else:
+                            y=message_text.lower()
+                            t=y.split()
+                            value=t[-1]
+
+                            key=t[1:len(t)-1]
+                            k=""
+                            for i in key:
+                                if i!='as' or i!='on' or i!='is':
+                                    k=k+" "+i
+
+                            k=k[1:]
+
+                            k=k.strip()
+
+                            res=save_post(sender_id,k,value)
+
+                            if res:
+                                print("Successfully saved")
+                                send_message(sender_id,"saved successfully")
+
+                            else:
+                                print("Error in db save")
+                                send_message(sender_id,"Error in saving. Please try again")
+
+
+
+
+
+
+
+
+                    '''GET FUNCTIONS'''
+                    if msg_lst[0].lower()=="get" or msg_lst[0].lower()=="recall":
+                        key=msg_lst[1:]
+                        print (key)
+                        k=""
+                        for i in key:
+                            k=k+" "+i
+                        k=k[1:]
+                        k=k.strip(" ")
+                        print (k)
+
+                        res=get_post(sender_id,k)
+                        if len(res)==0:
+                            send_message(sender_id,"Oops no memories found")
+                        else:
+                            send_message(sender_id,res[0]["value"])
+
+
+
+
+
+
+
+                    ''' WIKI FUNCTIONS '''
                     if msg_lst[0].lower()=="wiki":
                         l=len(msg_lst[0])
                         if len(message_text)==l:
@@ -50,22 +129,43 @@ def webhook():
                         else:
                             search=message_text[l:]
                             result=search_wiki(search) 
-                            article=get_results_wiki(result[0])
+                            if len(result)==0:
+                                send_message(sender_id,"Oops. Cannot find anything in wiki")
+                            else:
+
+                                article=get_results_wiki(result[0])
 
 
-                            heading = article.heading
-                            image=article.image
-                            url=article.url
-                            fall_back_url="https://en.wikipedia.org/"
-                            data=generic_template(url=url,img_url=image,title=heading,sub_title=None,fall_back_url=fall_back_url,btn_url=url,btn_title="Go to wiki",recipient=sender_id)
+                                heading = article.heading
+                                image=article.image
+                                url=article.url
+                                fall_back_url="https://en.wikipedia.org/"
+                                data=generic_template(url=url,img_url=image,title=heading,sub_title=None,fall_back_url=fall_back_url,btn_url=url,btn_title="Go to wiki",recipient=sender_id)
 
-                            send_message(sender_id,None,data)
+                                send_message(sender_id,None,data)
+
+
+
+
+
+                    ''' SAY/TELL FUNCTIONs '''
+                    if msg_lst[0].lower()=="say" or msg_lst[0].lower()=="tell":
+                        if msg_lst[-1].lower()=="joke":
+                            send_message(sender_id,get_jokes())
+
+                        if msg_lst[-1].lower()=="fact":
+                            send_message(sender_id,get_fact())
+
+                        if msg_lst[-1].lower()=="quote":
+                            send_message(sender_id,get_quote())
+
+
 
 
 
                             #send_message(sender_id, article.summary[:600])
                     else:
-                        send_message(sender_id,"TEST")
+                        send_message(sender_id,"CHAT")
 
                 if messaging_event.get("delivery"):  # delivery confirmation
                     pass
@@ -230,3 +330,38 @@ def send_writing(recipient):
     if r.status_code != 200:
         log(r.status_code)
         log(r.text)
+
+
+
+
+
+''' DATABASE QUERIES '''
+
+def save_post(sender_id,key,value):
+    connection=r.connect("localhost",28015)
+    res=r.db('remember_bot').table('post').insert({'sender_id':sender_id, 'key':key,'value':value} ).run(connection)
+    connection.close()
+    return res
+
+
+def get_post(sender_id,key):
+    connection=r.connect("localhost",28015)
+    res=list(r.db('remember_bot').table('post').filter((r.row['sender_id']==sender_id) & (r.row['key']==key) ).run(connection))
+    return (res)
+
+
+
+
+def get_jokes():
+    t=randint(0,len(jokes))
+    return jokes[t]
+
+
+
+def get_fact():
+    t=randint(0,len(facts))
+    return facts[t]
+
+def get_quote():
+    t=randint(0,len(quotes))
+    return quotes[t]
