@@ -11,7 +11,7 @@ from jokes import jokes
 from facts import facts
 from quotes import quotes
 from random import randint
-
+from news import *
 
 dbSetUp()
 
@@ -52,7 +52,11 @@ def webhook():
 
                     sender_id = messaging_event["sender"]["id"]        # the facebook ID of the person sending you the message
                     recipient_id = messaging_event["recipient"]["id"]  # the recipient's ID, which should be your page's facebook ID
-                    message_text = messaging_event["message"]["text"]  # the message's text
+                    if messaging_event["message"].get("text"):
+                        message_text = messaging_event["message"]["text"]
+                    else:
+                          # the message's text
+                        message_text="DONE"
 
                     
                     msg_lst=message_text.split(" ")
@@ -160,12 +164,23 @@ def webhook():
                             send_message(sender_id,get_quote())
 
 
+                    ''' news function '''
 
+                    if message_text.lower()=="what's new in techcrunch?":
+                        news=get_news()
+                        data=news_generic_template(news,sender_id)
+                        print (data)
+
+                        send_message(sender_id,None,data)
+
+
+
+                   
 
 
                             #send_message(sender_id, article.summary[:600])
-                    else:
-                        send_message(sender_id,"CHAT")
+                    # else:
+                    #     send_message(sender_id,"CHAT")
 
                 if messaging_event.get("delivery"):  # delivery confirmation
                     pass
@@ -351,6 +366,8 @@ def get_post(sender_id,key):
 
 
 
+''' JOKE , FACT ,QUOTE FUNCTIONS '''
+
 
 def get_jokes():
     t=randint(0,len(jokes))
@@ -365,3 +382,10 @@ def get_fact():
 def get_quote():
     t=randint(0,len(quotes))
     return quotes[t]
+
+
+'''-------------------------------------------------'''
+
+
+
+
