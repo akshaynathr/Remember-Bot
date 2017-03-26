@@ -1,0 +1,1 @@
+curl -X GET "https://graph.facebook.com/v2.6/me/messenger_profile?fields=whitelisted_domains&access_token=EAAPJyQPXUXMBADCpmjYyv3NDVJHEsVzTNLuzZBnAGj0BOsVZCu14fV9En4LCQPyPE08lMlWw3v1ggcKGWXb3hbHwZB2RHuoOtx82VB9bjItLBH9fZCEor7sLdGRA1Lb44xur8EHgDVYdX4bmutaSGFo2b4xOOoZAyoPVqdy2yKAZDZD" 
