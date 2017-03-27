@@ -13,10 +13,12 @@ from quotes import quotes
 from random import randint
 from news import *
 
+from manager import *
+
 dbSetUp()
 
 
-
+_chatbot_agent=None
 
 
 
@@ -39,6 +41,7 @@ def verify():
 def webhook():
 
     # endpoint for processing incoming messaging events
+    flag=0
 
     data = request.get_json()
     log(data)  # you may not want to log every incoming message in production, but it's good for testing
@@ -67,6 +70,7 @@ def webhook():
 
 
                     if msg_lst[0].lower()=="save":
+                        flag=1
                         l=len(msg_lst[0])
                         if len(message_text)==l or len(msg_lst)==2:
                             send_message(sender_id,"Please specify something to save. Type 'Save ExamId 12345' ")
@@ -104,6 +108,7 @@ def webhook():
 
                     '''GET FUNCTIONS'''
                     if msg_lst[0].lower()=="get" or msg_lst[0].lower()=="recall":
+                        flag=1
                         key=msg_lst[1:]
                         print (key)
                         k=""
@@ -127,6 +132,7 @@ def webhook():
 
                     ''' WIKI FUNCTIONS '''
                     if msg_lst[0].lower()=="wiki":
+                        flag=1
                         l=len(msg_lst[0])
                         if len(message_text)==l:
                             send_message(sender_id,"You specified nothing to search. Type 'Wiki search_term' ")
@@ -154,6 +160,7 @@ def webhook():
 
                     ''' SAY/TELL FUNCTIONs '''
                     if msg_lst[0].lower()=="say" or msg_lst[0].lower()=="tell":
+                        flag=1
                         if msg_lst[-1].lower()=="joke":
                             send_message(sender_id,get_jokes())
 
@@ -167,6 +174,7 @@ def webhook():
                     ''' news function '''
 
                     if message_text.lower()=="what's new in techcrunch?":
+                        flag=1
                         news=get_news()
                         data=news_generic_template(news,sender_id)
                         print (data)
@@ -176,11 +184,31 @@ def webhook():
 
 
                    
+                    ''' chat functions '''
+                   
+                        
 
 
-                            #send_message(sender_id, article.summary[:600])
-                    # else:
-                    #     send_message(sender_id,"CHAT")
+
+
+                        
+
+                    ''' chat functions '''
+
+                    if flag==0:
+                        flag=1
+                        if len(msg_lst)>0:
+                            global _chatbot_agent
+                            if _chatbot_agent==None:
+                                _chatbot_agent=initialize_bot()
+
+                            reply=ask_bot(message_text,_chatbot_agent)
+
+                            send_message(sender_id,reply)
+                        else:
+                            send_message(sender_id,"I don't understand your question. Sorry..")
+
+
 
                 if messaging_event.get("delivery"):  # delivery confirmation
                     pass
@@ -316,6 +344,7 @@ def generic_template(url,img_url,title,sub_title,fall_back_url,btn_url,btn_title
     }
 
           })
+
     print (data2)
     return data2
 
