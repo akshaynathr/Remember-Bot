@@ -1,10 +1,12 @@
 
 from DeepQA import chatbot
 
-
+'''
 chatbotPath="/home/hungarian_horntail/Scripts/mainProject/bot/bot2/interface/Remember-Bot/DeepQA"
 
+'''
 
+chatbotPath="/home/ubuntu/fb-messenger-bot/DeepQA"
 def initialize_bot():
 	t=chatbot.Chatbot()
 
