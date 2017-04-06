@@ -41,7 +41,7 @@ def verify():
 
 @app.route('/', methods=['POST'])
 def webhook():
-
+    previous=""
     # endpoint for processing incoming messaging events
     flag=0
 
@@ -80,12 +80,12 @@ def webhook():
                         message_text =message_text.strip("-")
                         message_text =message_text.strip("'")
 
+                        #return "ok",200
+                        if previous==message_text.lower():
+                            return "ok",200
+                        else:
+                            previous=message_text#.lower()
 
-                    # else:
-                    #   .    # the message's text
-                    #   . message_text="DONE"
-                        
-                        
                         msg_lst=message_text.split(" ")
 
 
@@ -190,19 +190,20 @@ def webhook():
 
                             if len(msg_lst)<=1:
                                 send_message(sender_id,"What should i say?")
+                                return "ok",200
                             else:
                                 if msg_lst[-1].lower()=="joke":
                                     send_message(sender_id,get_jokes())
-
+                                    return "ok",200
                                 elif msg_lst[-1].lower()=="fact":
                                     send_message(sender_id,get_fact())
-
+                                    return "ok",200
                                 elif msg_lst[-1].lower()=="quote":
                                     send_message(sender_id,get_quote())
-
+                                    return "ok",200
                                 else:
                                     send_message(sender_id,message_text[5:])
-
+                                    return "ok",200
 
                         ''' news function '''
 
@@ -213,7 +214,7 @@ def webhook():
                             print (data)
 
                             send_message(sender_id,None,data)
-
+                            return "ok",200
 
                        
                         ''' REMIND FUNCTION '''
@@ -239,6 +240,7 @@ def webhook():
                                     t=t+str(_t.format('YYYY-MM-DD HH:mm:ss'))
                                     connection.close()
                                     send_message(sender_id,t)
+                                    return "ok",200
 
                                 if message_text.find("minutes")!=-1 or message_text.find("minute")!=-1:
                                     connection=r.connect("localhost",28015)
@@ -280,6 +282,7 @@ def webhook():
                                     t=t+str(_t.format('YYYY-MM-DD HH:mm:ss'))
                                     connection.close()
                                     send_message(sender_id,t)
+                                    return "ok",200
 
 
                                 if message_text.find("tomorrow")!=-1:
@@ -295,7 +298,8 @@ def webhook():
                                         t=t+str(_t.format('YYYY-MM-DD HH:mm:ss'))
                                         connection.close()
                                         send_message(sender_id,t)
-                                        
+                                        return "ok",200
+
                                         
 
                         ''' name '''
@@ -303,6 +307,7 @@ def webhook():
                         if message_text=="What's your name":
                             flag=1
                             send_message(sender_id,"I am remember bot")
+                            return "ok",200
 
                         ''' search  '''
 
@@ -329,8 +334,12 @@ def webhook():
 
                             
                             send_message(sender_id,powers)
+                            return "ok",200
 
-
+                        if message_text.lower()=="thank you" or message_text.lower()=="thanks":
+                            flag=1
+                            send_message(sender_id,"Welcome")
+                            return "ok",200
 
                             
 
@@ -346,10 +355,16 @@ def webhook():
                                 reply=ask_bot(message_text,_chatbot_agent)
 
                                 send_message(sender_id,reply)
+                                return "ok",200
                             else:
                                 send_message(sender_id,"I don't understand your question. Sorry..")
+                                return "ok",200
 
                         #return "ok", 200
+                    else:
+                          # the message's text
+                        send_message(sender_id,"Thank you :)")
+                        return "ok",200
 
 
                 if messaging_event.get("delivery"):  # delivery confirmation
@@ -367,10 +382,13 @@ def webhook():
 def send_message(recipient_id, message_text,data=None):
 
     log("sending message to {recipient}: {text}".format(recipient=recipient_id, text=message_text))
-
+    #remember bot
     params = {
         "access_token": "EAAPJyQPXUXMBAHcfCZChSIaJzaNahe04jsGkBSdlhTz637ZA3rUmBcUXJ6cQKbOVmLUAfSLT4hA5zY5ZCfi2Lv6uk7lTxKM5OT29nHMhrNJSOq0lzZCSeftHAPnt7CPdiTCZAsVi4Vdnc4li83Ml0MbloINZCJmFZCItKD9e7IYZCwZDZD"
     }
+    # params = {
+    #      "access_token": "EAAPJyQPXUXMBABoBaAiDgOTpa8RgZBNNzUqkyYqIkipL7ZBvrbeZB0ZAziTeMqqmiJSFTZAjF27NeApDl8zZBBwP5t3s8mZAVjZBnLB6pHH2LgiYjaQDDnKETPZBLy6QXTmsmBsSQYM7AQenKIHUzW8e01ayaZA7MxXUCtNYOsSaP40AZDZD"
+    #      }
     headers = {
         "Content-Type": "application/json"
     }
@@ -534,6 +552,7 @@ def save_post(sender_id,key,value):
 
 
 def get_post(sender_id,key):
+    key=key.lower()
     connection=r.connect("localhost",28015)
     res=list(r.db('remember_bot').table('post').filter((r.row['sender_id']==sender_id) & (r.row['key']==key) ).run(connection))
     return (res)
