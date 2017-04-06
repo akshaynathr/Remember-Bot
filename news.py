@@ -37,7 +37,10 @@ def news_generic_template(data,recipient):
                   "type":"web_url",
                   "url":i['url'],#"https://www.techcrunch.com",
                   "title":"Read story"
-                }            
+                },
+                {
+                   "type":"element_share"
+                }                        
               ]      
         }
       data2["message"]["attachment"]["payload"]["elements"].append(d)
