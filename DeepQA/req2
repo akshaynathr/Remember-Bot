@@ -1,0 +1,13 @@
+click==6.7
+Flask==0.12
+itsdangerous==0.24
+Jinja2==2.9.5
+MarkupSafe==1.0
+nltk==3.2.2
+numpy==1.12.0
+protobuf==3.2.0
+rethinkdb==2.3.0.post6
+six==1.10.0
+tensorflow==0.12.1
+-e git+https://github.com/tqdm/tqdm.git@0464e8aaeb569981a7ba6d31803d256fbf328de9#egg=tqdm
+Werkzeug==0.12.1
